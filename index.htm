@@ -3,15 +3,30 @@
 	<title>Golden Bear</title>
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.8/dojo/resources/dojo.css" />
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.8/dijit/themes/tundra/tundra.css" />
-  <link rel="stylesheet" href="../lib/CodeMirror/lib/codemirror.css">
-	<link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/lib/codemirror.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/ambiance.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/blackboard.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/cobalt.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/eclipse.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/elegant.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/erlang-dark.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/lesser-dark.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/monokai.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/net.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/night.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/rubyblue.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/solarized.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/twilight.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/vibrant-ink.css" />
+  <link rel="stylesheet" href="../lib/CodeMirror/theme/xq-dark.css" />
+  <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body class="tundra">
 	<div id='app-splash' style="background: #fff; z-index: 999; width: 100%; height: 100%; text-align: center;">
 		<img src='./img/loading.gif' style="position: absolute; top: 50%; left: 50%; margin-top: -190px; margin-left: -254px;">
 	</div>
 	
-	<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design: 'headline', gutters: true, persist: true" style="padding: 0; height: 100%; width: 100%;">
+	<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design: 'headline', gutters: true, persist: true" style="margin: 0; padding: 0; height: 100%; width: 100%;">
 		<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'top'" style="margin: 0; padding: 0; height: 60px; border: none;">
       <div id="appMenu"></div>
     </div>
@@ -24,14 +39,7 @@
 		</div>
 		
     <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center'" style="margin: 0; padding: 0; border: none">
-      <div id="documentEditor"data-dojo-type="dijit/layout/TabContainer" data-dojo-props="persist: true">
-        <div data-dojo-type="dijit/layout/ContentPane" title="Doc 1" data-dojo-props="closable: true">
-          <div id="doc1" style="margin: 0; padding: 0; width: 100%; height: 100%;"></div>
-        </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Doc 2" data-dojo-props="closable: true">
-          <div id="doc2" style="margin: 0; padding: 0; width: 100%; height: 100%;"></div>
-        </div>  
-      </div>
+      <div id="documentEditor"data-dojo-type="dijit/layout/TabContainer" data-dojo-props="persist: true"></div>
     </div>
     <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region: 'bottom', splitter: true, tabPosition: 'left-h'">
       <div data-dojo-type="dijit/layout/ContentPane" title="Status">Status</div>
