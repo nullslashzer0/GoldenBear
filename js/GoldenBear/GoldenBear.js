@@ -4,7 +4,7 @@ require([
   "dijit/registry",
   "dijit/TitlePane",
   "dijit/MenuBar", "dijit/PopupMenuBarItem", "dijit/DropDownMenu",
-  "dijit/MenuItem", "dijit/PopupMenuItem",
+  "dijit/MenuItem", "dijit/PopupMenuItem", "dijit/MenuSeparator",
 	"dijit/layout/BorderContainer", "dijit/layout/TabContainer", "dijit/layout/ContentPane"
 ], function(
 	ready, parser, on,
@@ -12,9 +12,10 @@ require([
   registry,
   TitlePane,
   MenuBar, PopupMenuBarItem,DropDownMenu,
-  MenuItem, PopupMenuItem,
+  MenuItem, PopupMenuItem, MenuSeparator,
 	BorderContainer, TabContainer, ContentPane
 ){
+  
   var codemirror = {
     themes: [
       'ambiance', 'blackboard','cobalt','eclipse','elegant','erlang-dark','lesser-dark',
@@ -97,13 +98,178 @@ require([
    ********************************************************************/  
   function fileMenu() {
     var menu = new DropDownMenu();
-    menu.addChild(new MenuItem({
+    menu.addChild(newFile());
+    menu.addChild(newFileWithTemplate());
+    menu.addChild(new MenuSeparator());
+    menu.addChild(open());
+    menu.addChild(openSelectedFile());
+    menu.addChild(recentFiles());
+    menu.addChild(new MenuSeparator());
+    menu.addChild(save());
+    menu.addChild(saveAs());
+    menu.addChild(saveAll());
+    menu.addChild(reload());
+    menu.addChild(reloadAll());
+    menu.addChild(new MenuSeparator());
+    menu.addChild(properties());
+    menu.addChild(new MenuSeparator());
+    menu.addChild(pageSetup());
+    menu.addChild(print());
+    menu.addChild(new MenuSeparator());
+    return menu;
+  }
+  
+  function newFile() {
+    return new MenuItem({
       label: 'New',
       onClick: function() {
         openFile();
       }
-    }));
-    return menu;
+    });
+  }
+  
+  function newFileWithTemplate() {
+    return new MenuItem({
+      label: 'New (With Template)',
+      onClick: function() {
+        console.warn("File->New (With Template) - not yet implemented");
+      }
+    });
+  }
+  
+  function open() {
+    return new MenuItem({
+      label: 'Open',
+      onClick: function() {
+        console.warn("File->Open - not yet implemented");
+      }
+    });
+  }
+  
+  function openSelectedFile() {
+    return new MenuItem({
+      label: 'Open Selected File',
+      onClick: function() {
+        console.warn("File->Open Selected File - not yet implemented");
+      }
+    });
+  }
+  
+  function recentFiles() {
+    return new MenuItem({
+      label: 'Recent Files',
+      onClick: function() {
+        console.warn("File->Recent Files - not yet implemented");
+      }
+    });
+  }
+  
+  function save() {
+    return new MenuItem({
+      label: 'Save',
+      onClick: function() {
+        console.warn("File->Save - not yet implemented");
+      }
+    });
+  }
+  
+  function saveAs() {
+    return new MenuItem({
+      label: 'Save As',
+      onClick: function() {
+        console.warn("File->Save As - not yet implemented");
+      }
+    });
+  }
+  
+  function saveAll() {
+    return new MenuItem({
+      label: 'Save All',
+      onClick: function() {
+        console.warn("File->Save All - not yet implemented");
+      }
+    });
+  }
+  
+  function reload() {
+    return new MenuItem({
+      label: 'Reload',
+      onClick: function() {
+        console.warn("File->Reload - not yet implemented");
+      }
+    });
+  }
+  
+  function reloadAll() {
+    return new MenuItem({
+      label: 'Reload All',
+      onClick: function() {
+        console.warn("File->Reload All - not yet implemented");
+      }
+    });
+  }
+  
+  function properties() {
+    return new MenuItem({
+      label: 'Properties',
+      onClick: function() {
+        console.warn("File->Properties - not yet implemented");
+      }
+    });
+  }
+  
+  function pageSetup() {
+    return new MenuItem({
+      label: 'Page Setup',
+      onClick: function() {
+        console.warn("File->Page Setup - not yet implemented");
+      }
+    });
+  }
+  
+  function print() {
+    return new MenuItem({
+      label: 'Print',
+      onClick: function() {
+        console.warn("File->Print  - not yet implemented");
+      }
+    });
+  }
+  
+  function close() {
+    return new MenuItem({
+      label: 'Close',
+      onClick: function() {
+        console.warn("File->Close  - not yet implemented");
+      }
+    });
+  }
+  
+  function closeOtherDocuments() {
+    return new MenuItem({
+      label: 'Close Other Documents',
+      onClick: function() {
+        console.warn("File->Close Other Documents  - not yet implemented");
+      }
+    });
+  }
+  
+  function closeAll() {
+    return new MenuItem({
+      label: 'Close All',
+      onClick: function() {
+        console.warn("File->Close All  - not yet implemented");
+      }
+    });
+  }
+  
+  function quit() {
+    return new MenuItem({
+      label: 'Quit',
+      onClick: function() {
+        console.warn("File->Quit  - not yet implemented");
+      }
+    });
   }
   
   function openFile(name) {
