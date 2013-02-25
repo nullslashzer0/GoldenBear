@@ -1,19 +1,23 @@
 require([
 	"dojo/ready", "dojo/parser", "dojo/on",
-	"dojo/dom", "dojo/dom-construct", "dojo/dom-style",
+  "dojo/cookie",
+	"dojo/dom", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr",
   "dijit/registry",
   "dijit/TitlePane",
   "dijit/MenuBar", "dijit/PopupMenuBarItem", "dijit/DropDownMenu",
   "dijit/MenuItem", "dijit/PopupMenuItem", "dijit/MenuSeparator",
-	"dijit/layout/BorderContainer", "dijit/layout/TabContainer", "dijit/layout/ContentPane"
+	"dijit/layout/BorderContainer", "dijit/layout/TabContainer", "dijit/layout/ContentPane",
+  "GoldenBear/File"
 ], function(
 	ready, parser, on,
-	dom, domConstruct, domStyle,
+  cookie,
+	dom, domConstruct, domStyle, domAttr,
   registry,
   TitlePane,
   MenuBar, PopupMenuBarItem,DropDownMenu,
   MenuItem, PopupMenuItem, MenuSeparator,
-	BorderContainer, TabContainer, ContentPane
+	BorderContainer, TabContainer, ContentPane,
+  File
 ){
   
   var codemirror = {
@@ -29,7 +33,10 @@ require([
     applicationMenu();
     registry.byId('documentEditor').watch('selectedChildWidget', function(name, oval, nval) {
       console.debug(name, " changed from ", oval, " to ", nval);
-      
+      var file = registry.byId(domAttr.get(nval.domNode, 'data-fileid'));
+      var cm = file.get('codemirror');
+      cm.refresh(); // refresh codemirror to fix display issues
+      cm.focus();
     });
     
     domStyle.set(dom.byId('app-splash'), 'display', 'none');
@@ -116,6 +123,7 @@ require([
     menu.addChild(pageSetup());
     menu.addChild(print());
     menu.addChild(new MenuSeparator());
+    menu.addChild(quit());
     return menu;
   }
   
@@ -273,7 +281,8 @@ require([
   }
   
   function openFile(name) {
-    var name = name || 'untitled';
+    //~ var name = name || 'untitled';
+    var name = name || 'test.html';
     var cmid = "document." + openFiles.length;  // codemirror id
     var tc = registry.byId('documentEditor');
     var cp = new ContentPane({
@@ -283,11 +292,20 @@ require([
     });
     
     var cm = CodeMirror(cp.containerNode, {
+      theme: cookie('goldenbear.editor.theme') || 'default',
       lineNumbers: true,
     });
+
+    var _file = new File({
+      codemirror: cm,
+      name: name
+    });
     
-    openFiles.push(cm);
-    on(cp, 'show', function() { cm.refresh(); });
+    console.debug(_file);
+    
+    domAttr.set(cp.domNode, 'data-fileid', _file.id);
+    
+    openFiles.push(_file);
     tc.addChild(cp);
   }
   
@@ -306,9 +324,10 @@ require([
         onClick: function() {
           var theme = this.label;
           for(var i = 0, max = openFiles.length; i < max; i++) {
-            var cm = openFiles[i];
-            cm.setOption('theme', theme);
+            var _file = openFiles[i];
+            _file.get('codemirror').setOption('theme', theme);
           }
+          cookie('goldenbear.editor.theme', theme);
         }
       }));
     }
