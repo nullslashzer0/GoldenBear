@@ -282,7 +282,7 @@ require([
   
   function openFile(name) {
     //~ var name = name || 'untitled';
-    var name = name || 'test.html';
+    var name = name || 'test.xml';
     var cmid = "document." + openFiles.length;  // codemirror id
     var tc = registry.byId('documentEditor');
     var cp = new ContentPane({

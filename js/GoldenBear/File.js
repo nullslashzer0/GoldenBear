@@ -33,27 +33,27 @@ define([
   };
   
   var codemirrorModeFile = {
-    'clike':      '/../lib/CodeMirror/mode/clike/clike.js',
-    'css':        '/../lib/CodeMirror/mode/css/css.js',
-    'd':          '/../lib/CodeMirror/mode/d/d.js',
-    'diff':       '/../lib/CodeMirror/mode/diff/diff.js',
-    'erlang':     '/../lib/CodeMirror/mode/erlang/erlang.js',
-    'haskell':    '/../lib/CodeMirror/mode/haskell/haskell.js',
-    'haxe':       '/../lib/CodeMirror/mode/haxe/haxe.js',
-    'htmlmixed':  '/../lib/CodeMirror/mode/htmlmixed/htmlmixed.js',
-    'javascript': '/../lib/CodeMirror/mode/javascript/javascript.js',
-    'lua':        '/../lib/CodeMirror/mode/lua/lua.js',
-    'markdown':   '/../lib/CodeMirror/mode/markdown/markdown.js',
-    'pascal':     '/../lib/CodeMirror/mode/pascal/pascal.js',
-    'perl':       '/../lib/CodeMirror/mode/perl/perl.js',
-    'php':        '/../lib/CodeMirror/mode/php/php.js',
-    'r':          '/../lib/CodeMirror/mode/r/r.js',
-    'ruby':       '/../lib/CodeMirror/mode/ruby/ruby.js',
-    'shell':      '/../lib/CodeMirror/mode/shell/shell.js',
-    'sql':        '/../lib/CodeMirror/mode/sql/sql.js',
-    'verilog':    '/../lib/CodeMirror/mode/verilog/verilog.js',
-    'xml':        '/../lib/CodeMirror/mode/xml/xml.js',
-    'yaml':       '/../lib/CodeMirror/mode/yaml/yaml.js'
+    'clike':      'js/CodeMirror/mode/clike/clike.js',
+    'css':        'js/CodeMirror/mode/css/css.js',
+    'd':          'js/CodeMirror/mode/d/d.js',
+    'diff':       'js/CodeMirror/mode/diff/diff.js',
+    'erlang':     'js/CodeMirror/mode/erlang/erlang.js',
+    'haskell':    'js/CodeMirror/mode/haskell/haskell.js',
+    'haxe':       'js/CodeMirror/mode/haxe/haxe.js',
+    'htmlmixed':  'js/CodeMirror/mode/htmlmixed/htmlmixed.js',
+    'javascript': 'js/CodeMirror/mode/javascript/javascript.js',
+    'lua':        'js/CodeMirror/mode/lua/lua.js',
+    'markdown':   'js/CodeMirror/mode/markdown/markdown.js',
+    'pascal':     'js/CodeMirror/mode/pascal/pascal.js',
+    'perl':       'js/CodeMirror/mode/perl/perl.js',
+    'php':        'js/CodeMirror/mode/php/php.js',
+    'r':          'js/CodeMirror/mode/r/r.js',
+    'ruby':       'js/CodeMirror/mode/ruby/ruby.js',
+    'shell':      'js/CodeMirror/mode/shell/shell.js',
+    'sql':        'js/CodeMirror/mode/sql/sql.js',
+    'verilog':    'js/CodeMirror/mode/verilog/verilog.js',
+    'xml':        'js/CodeMirror/mode/xml/xml.js',
+    'yaml':       'js/CodeMirror/mode/yaml/yaml.js'
   };
   
   function getCodeMirrorMode(filename) {
@@ -118,9 +118,11 @@ define([
     
     setCodeMirrorMode: function() {
       var mode = getCodeMirrorMode(this.name);
+      var loaded = modeScriptLoaded(mode);
       var cm = this.codemirror;
+      
       // check if script was already loaded before loading again
-      if (modeScriptLoaded(mode) == false) {
+      if (!loaded) {
         var file = codemirrorModeFile[mode];
         
         xhr(file, { 
