@@ -60,7 +60,7 @@ require([
      
     menubar.addChild(new PopupMenuBarItem({
       label: "Search",
-      popup: new DropDownMenu({})
+      popup: searchMenu()
     }));
      
     menubar.addChild(new PopupMenuBarItem({
@@ -406,38 +406,262 @@ require([
   }
   
   /*********************************************************************
+   * Search Menu
+   ********************************************************************/  
+  function searchMenu() {
+   var menu = new DropDownMenu();
+   menu.addChild(searchFind());
+   menu.addChild(searchFindNext());
+   menu.addChild(searchFindPrevious());
+   menu.addChild(new MenuSeparator()); 
+   menu.addChild(searchFindInFiles());
+   menu.addChild(searchReplace());
+   menu.addChild(new MenuSeparator()); 
+   menu.addChild(searchNextMessage());
+   menu.addChild(searchPreviousMessage());
+   menu.addChild(new MenuSeparator()); 
+   menu.addChild(searchGoToNextMarker());
+   menu.addChild(searchGoToPreviousMarker());
+   menu.addChild(new MenuSeparator()); 
+   menu.addChild(searchGoToLine());
+   menu.addChild(searchMore());
+    
+    return menu;
+  }
+  
+  function searchFind() {
+    return new MenuItem({
+      label: 'Find',
+      disabled: true
+    });
+  }
+  
+  function searchFindNext() {
+    return new MenuItem({
+      label: 'Find Next',
+      disabled: true
+    });
+  }
+  
+  function searchFindPrevious() {
+    return new MenuItem({
+      label: 'Find Previous',
+      disabled: true
+    });
+  }
+  
+  function searchFindInFiles() {
+    return new MenuItem({
+      label: 'Find In Files',
+      disabled: true
+    });
+  }
+  
+  function searchReplace() {
+    return new MenuItem({
+      label: 'Replace',
+      disabled: true
+    });
+  }
+  
+  function searchNextMessage() {
+    return new MenuItem({
+      label: 'Next Message',
+      disabled: true
+    });
+  }
+
+  function searchPreviousMessage() {
+    return new MenuItem({
+      label: 'Previous Message',
+      disabled: true
+    });
+  }
+  
+  function searchGoToNextMarker() {
+    return new MenuItem({
+      label: 'Go To Next Marker',
+      disabled: true
+    });
+  }
+  
+  function searchGoToPreviousMarker() {
+    return new MenuItem({
+      label: 'Go To Previous Marker',
+      disabled: true
+    });
+  }
+  
+  function searchGoToLine() {
+    return new MenuItem({
+      label: 'Go To Line',
+      disabled: true
+    });
+  }
+  
+  function searchMore() {
+    return new MenuItem({
+      label: 'More',
+      disabled: true
+    });
+  }
+
+  /*********************************************************************
    * View Menu
    ********************************************************************/  
   function viewMenu() {
-    var menu = new DropDownMenu();
-    var editorMenu = new DropDownMenu();
-    var themesMenu = new DropDownMenu();
+   var menu = new DropDownMenu();
+   menu.addChild(viewChangeFont());
+   menu.addChild(new MenuSeparator()); 
+   menu.addChild(viewToggleAllAdditionalWidgets());
+   menu.addChild(viewFullScreen());
+   menu.addChild(viewShowMessageWindow());
+   menu.addChild(viewShowToolbar());
+   menu.addChild(viewShowSidebar());
+   menu.addChild(viewEditor());
+   menu.addChild(new MenuSeparator()); 
+   menu.addChild(viewZoomIn());
+   menu.addChild(viewZoomOut());
+   menu.addChild(viewNormalSize());
+    
+    return menu;
+  }
+  
+  function viewChangeFont() {
+    return new MenuItem({
+      label: 'Change Font',
+      disabled: true
+    });
+  }
+  
+  function viewToggleAllAdditionalWidgets() {
+    return new MenuItem({
+      label: 'Toggle All Additional Widgets',
+      disabled: true
+    });
+  }
+  
+  function viewFullScreen() {
+    return new MenuItem({
+      label: 'Fullscreen',
+      disabled: true
+    });
+  }
+  
+  function viewShowMessageWindow() {
+    return new MenuItem({
+      label: 'Show Message Window',
+      disabled: true
+    });
+  }
+  
+  function viewShowToolbar() {
+    return new MenuItem({
+      label: 'Show Toolbar',
+      disabled: true
+    });
+  }
+  
+  function viewShowSidebar() {
+    return new MenuItem({
+      label: 'Show Sidebar',
+      disabled: true
+    });
+  }
+  
+  function viewEditor() {
+    var popup = new DropDownMenu();
+    popup.addChild(viewEditor_ColorSchemes());
+    popup.addChild(viewEditor_ShowMarkersMargin());
+    popup.addChild(viewEditor_ShowLineNumbers());
+    popup.addChild(viewEditor_ShowWhiteSpace());
+    popup.addChild(viewEditor_ShowLineEndings());
+    popup.addChild(viewEditor_ShowIndentationGuides());
+    
+    var menu = new PopupMenuItem({
+      label: 'Editor',
+      popup: popup
+    });
+    
+    return menu;
+  }
+  
+  function viewEditor_ColorSchemes() {
+    var popup = new DropDownMenu();
     var themes = codemirror.themes.reverse();
-    var themesCount = themes.length;
-    while(--themesCount) {
-      themesMenu.addChild(new MenuItem({
-        label: codemirror.themes[themesCount],
+    var i = themes.length;
+    
+    while(--i) {
+      popup.addChild(new MenuItem({
+        label: codemirror.themes[i],
         onClick: function() {
-          var theme = this.label;
           for(var i = 0, max = openFiles.length; i < max; i++) {
-            var _file = openFiles[i];
-            _file.get('codemirror').setOption('theme', theme);
+            openFiles[i].get('codemirror').setOption('theme', this.label)
           }
-          cookie('goldenbear.editor.theme', theme);
+          cookie('goldenbear.editor.theme', this.label);
         }
       }));
     }
     
-    editorMenu.addChild(new PopupMenuItem({
-      label: 'Themes',
-      popup: themesMenu
-    }));
-    
-    menu.addChild(new PopupMenuItem({
-      label: 'Editor',
-      popup: editorMenu
-    }));
-      
-    return menu;
+    return new PopupMenuItem({
+      label: 'Color Schemes',
+      popup: popup
+    });
+  }
+  
+  function viewEditor_ShowMarkersMargin() {
+    return new MenuItem({
+      label: 'Show Markers Margin',
+      disabled: true
+    });
+  }
+  
+  function viewEditor_ShowLineNumbers() {
+    return new MenuItem({
+      label: 'Show Line Numbers',
+      disabled: true
+    });
+  }
+  
+  function viewEditor_ShowWhiteSpace() {
+    return new MenuItem({
+      label: 'Show White Space',
+      disabled: true
+    });
+  }
+  
+  function viewEditor_ShowLineEndings() {
+    return new MenuItem({
+      label: 'Show Line Endings',
+      disabled: true
+    });
+  }
+  
+  function viewEditor_ShowIndentationGuides() {
+    return new MenuItem({
+      label: 'Show Indentation Guides',
+      disabled: true
+    });
+  }
+  
+  function viewZoomIn() {
+    return new MenuItem({
+      label: 'Zoom In',
+      disabled: true
+    });
+  }
+  
+  function viewZoomOut() {
+    return new MenuItem({
+      label: 'Zoom Out',
+      disabled: true
+    });
+  }
+  
+  function viewNormalSize() {
+    return new MenuItem({
+      label: 'Normal Size',
+      disabled: true
+    });
   }
 }); // end require
