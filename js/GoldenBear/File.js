@@ -33,27 +33,27 @@ define([
   };
   
   var codemirrorModeFile = {
-    'clike':      'js/CodeMirror/mode/clike/clike.js',
-    'css':        'js/CodeMirror/mode/css/css.js',
-    'd':          'js/CodeMirror/mode/d/d.js',
-    'diff':       'js/CodeMirror/mode/diff/diff.js',
-    'erlang':     'js/CodeMirror/mode/erlang/erlang.js',
-    'haskell':    'js/CodeMirror/mode/haskell/haskell.js',
-    'haxe':       'js/CodeMirror/mode/haxe/haxe.js',
-    'htmlmixed':  'js/CodeMirror/mode/htmlmixed/htmlmixed.js',
-    'javascript': 'js/CodeMirror/mode/javascript/javascript.js',
-    'lua':        'js/CodeMirror/mode/lua/lua.js',
-    'markdown':   'js/CodeMirror/mode/markdown/markdown.js',
-    'pascal':     'js/CodeMirror/mode/pascal/pascal.js',
-    'perl':       'js/CodeMirror/mode/perl/perl.js',
-    'php':        'js/CodeMirror/mode/php/php.js',
-    'r':          'js/CodeMirror/mode/r/r.js',
-    'ruby':       'js/CodeMirror/mode/ruby/ruby.js',
-    'shell':      'js/CodeMirror/mode/shell/shell.js',
-    'sql':        'js/CodeMirror/mode/sql/sql.js',
-    'verilog':    'js/CodeMirror/mode/verilog/verilog.js',
-    'xml':        'js/CodeMirror/mode/xml/xml.js',
-    'yaml':       'js/CodeMirror/mode/yaml/yaml.js'
+    'clike':      ['js/CodeMirror/mode/clike/clike.js'],
+    'css':        ['js/CodeMirror/mode/css/css.js'],
+    'd':          ['js/CodeMirror/mode/d/d.js'],
+    'diff':       ['js/CodeMirror/mode/diff/diff.js'],
+    'erlang':     ['js/CodeMirror/mode/erlang/erlang.js'],
+    'haskell':    ['js/CodeMirror/mode/haskell/haskell.js'],
+    'haxe':       ['js/CodeMirror/mode/haxe/haxe.js'],
+    'htmlmixed':  ['js/CodeMirror/mode/xml/xml.js', 'js/CodeMirror/mode/javascript/javascript.js', 'js/CodeMirror/mode/css/css.js', 'js/CodeMirror/mode/htmlmixed/htmlmixed.js'],
+    'javascript': ['js/CodeMirror/mode/javascript/javascript.js'],
+    'lua':        ['js/CodeMirror/mode/lua/lua.js'],
+    'markdown':   ['js/CodeMirror/mode/markdown/markdown.js'],
+    'pascal':     ['js/CodeMirror/mode/pascal/pascal.js'],
+    'perl':       ['js/CodeMirror/mode/perl/perl.js'],
+    'php':        ['js/CodeMirror/mode/php/php.js'],
+    'r':          ['js/CodeMirror/mode/r/r.js'],
+    'ruby':       ['js/CodeMirror/mode/ruby/ruby.js'],
+    'shell':      ['js/CodeMirror/mode/shell/shell.js'],
+    'sql':        ['js/CodeMirror/mode/sql/sql.js'],
+    'verilog':    ['js/CodeMirror/mode/verilog/verilog.js'],
+    'xml':        ['js/CodeMirror/mode/xml/xml.js'],
+    'yaml':       ['js/CodeMirror/mode/yaml/yaml.js']
   };
   
   function getCodeMirrorMode(filename) {
@@ -87,7 +87,7 @@ define([
     var filename = mode + ".js";
     var scripts = document.getElementsByTagName('script')
     var loaded = false;
-    for(var i = 0, max = scripts.length; i < max || loaded; i++) {
+    for(var i = 0, max = scripts.length; i < max && !loaded; i++) {
       var src = scripts[i].src;
       var dataMode = domAttr.get(scripts[i], 'data-codemirror-mode');
       loaded = (src.match(mode) || (dataMode && dataMode.match(mode)) );
@@ -123,19 +123,22 @@ define([
       
       // check if script was already loaded before loading again
       if (!loaded) {
-        var file = codemirrorModeFile[mode];
+        var files = codemirrorModeFile[mode];
         
-        xhr(file, { 
-          sync: true,
-        }).then(function(data) {
-          domConstruct.create('script', {
-            'data-codemirror-mode': mode,
-            innerHTML: data
-          }, document.getElementsByTagName('head')[0], 'last');
-          cm.setOption('mode', mode);
-        }, function(err) {
-          console.error(err);
-        });
+        for(var i = 0, max = files.length; i < max; i++) {
+          var file = files[i];
+          xhr(file, { 
+            sync: true,
+          }).then(function(data) {
+            domConstruct.create('script', {
+              'data-codemirror-mode': mode,
+              innerHTML: data
+            }, document.getElementsByTagName('head')[0], 'last');
+            cm.setOption('mode', mode);
+          }, function(err) {
+            console.error(err);
+          });
+        }
       }
     }
   }); // End declare

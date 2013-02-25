@@ -47,17 +47,15 @@ require([
    ********************************************************************/
   function applicationMenu() {
     var menubar = new MenuBar({});
-    var _file = fileMenu();
-    var _view = viewMenu();
     
     menubar.addChild(new PopupMenuBarItem({
       label: "File",
-      popup: _file
+      popup: fileMenu()
     }));
     
     menubar.addChild(new PopupMenuBarItem({
       label: "Edit",
-      popup: new DropDownMenu({})
+      popup: editMenu()
     }));
      
     menubar.addChild(new PopupMenuBarItem({
@@ -67,7 +65,7 @@ require([
      
     menubar.addChild(new PopupMenuBarItem({
       label: "View",
-      popup: _view
+      popup: viewMenu()
     }));
      
     menubar.addChild(new PopupMenuBarItem({
@@ -86,7 +84,7 @@ require([
     }));
      
     menubar.addChild(new PopupMenuBarItem({
-      label: "View",
+      label: "Tools",
       popup: new DropDownMenu({})
     }));
     
@@ -105,189 +103,159 @@ require([
    ********************************************************************/  
   function fileMenu() {
     var menu = new DropDownMenu();
-    menu.addChild(newFile());
-    menu.addChild(newFileWithTemplate());
+    menu.addChild(fileNew());
+    menu.addChild(fileNewFileWithTemplate());
     menu.addChild(new MenuSeparator());
-    menu.addChild(open());
-    menu.addChild(openSelectedFile());
-    menu.addChild(recentFiles());
+    menu.addChild(fileOpen());
+    menu.addChild(fileOpenSelectedFile());
+    menu.addChild(fileRecentFiles());
     menu.addChild(new MenuSeparator());
-    menu.addChild(save());
-    menu.addChild(saveAs());
-    menu.addChild(saveAll());
-    menu.addChild(reload());
-    menu.addChild(reloadAll());
+    menu.addChild(fileSave());
+    menu.addChild(fileSaveAs());
+    menu.addChild(fileSaveAll());
+    menu.addChild(fileReload());
+    menu.addChild(fileReloadAll());
     menu.addChild(new MenuSeparator());
-    menu.addChild(properties());
+    menu.addChild(fileProperties());
     menu.addChild(new MenuSeparator());
-    menu.addChild(pageSetup());
-    menu.addChild(print());
+    menu.addChild(filePageSetup());
+    menu.addChild(filePrint());
     menu.addChild(new MenuSeparator());
-    menu.addChild(quit());
+    menu.addChild(fileQuit());
+    
     return menu;
   }
   
-  function newFile() {
+  function fileNew() {
     return new MenuItem({
       label: 'New',
       onClick: function() {
+        openFile('text.xml');
+        openFile('test.html');
         openFile();
       }
     });
   }
   
-  function newFileWithTemplate() {
+  function fileNewFileWithTemplate() {
     return new MenuItem({
       label: 'New (With Template)',
-      onClick: function() {
-        console.warn("File->New (With Template) - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function open() {
+  function fileOpen() {
     return new MenuItem({
       label: 'Open',
-      onClick: function() {
-        console.warn("File->Open - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function openSelectedFile() {
+  function fileOpenSelectedFile() {
     return new MenuItem({
       label: 'Open Selected File',
-      onClick: function() {
-        console.warn("File->Open Selected File - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function recentFiles() {
+  function fileRecentFiles() {
     return new MenuItem({
       label: 'Recent Files',
-      onClick: function() {
-        console.warn("File->Recent Files - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function save() {
+  function fileSave() {
     return new MenuItem({
       label: 'Save',
-      onClick: function() {
-        console.warn("File->Save - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function saveAs() {
+  function fileSaveAs() {
     return new MenuItem({
       label: 'Save As',
-      onClick: function() {
-        console.warn("File->Save As - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function saveAll() {
+  function fileSaveAll() {
     return new MenuItem({
       label: 'Save All',
-      onClick: function() {
-        console.warn("File->Save All - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function reload() {
+  function fileReload() {
     return new MenuItem({
       label: 'Reload',
-      onClick: function() {
-        console.warn("File->Reload - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function reloadAll() {
+  function fileReloadAll() {
     return new MenuItem({
       label: 'Reload All',
-      onClick: function() {
-        console.warn("File->Reload All - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function properties() {
+  function fileProperties() {
     return new MenuItem({
       label: 'Properties',
-      onClick: function() {
-        console.warn("File->Properties - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function pageSetup() {
+  function filePageSetup() {
     return new MenuItem({
       label: 'Page Setup',
-      onClick: function() {
-        console.warn("File->Page Setup - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function print() {
+  function filePrint() {
     return new MenuItem({
       label: 'Print',
-      onClick: function() {
-        console.warn("File->Print  - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function close() {
+  function fileClose() {
     return new MenuItem({
       label: 'Close',
-      onClick: function() {
-        console.warn("File->Close  - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function closeOtherDocuments() {
+  function fileCloseOtherDocuments() {
     return new MenuItem({
       label: 'Close Other Documents',
-      onClick: function() {
-        console.warn("File->Close Other Documents  - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function closeAll() {
+  function fileCloseAll() {
     return new MenuItem({
       label: 'Close All',
-      onClick: function() {
-        console.warn("File->Close All  - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function quit() {
+  function fileQuit() {
     return new MenuItem({
       label: 'Quit',
-      onClick: function() {
-        console.warn("File->Quit  - not yet implemented");
-      }
+      disabled: true
     });
   }
   
-  function openFile(name) {
-    //~ var name = name || 'untitled';
-    var name = name || 'test.xml';
+  function openFile(filename) {
+    var filename = filename || 'untitled';
     var cmid = "document." + openFiles.length;  // codemirror id
     var tc = registry.byId('documentEditor');
     var cp = new ContentPane({
       id: 'tab.' + cmid,
-      title: name,
+      title: filename,
       closable: true
     });
     
@@ -298,7 +266,7 @@ require([
 
     var _file = new File({
       codemirror: cm,
-      name: name
+      name: filename
     });
     
     console.debug(_file);
@@ -307,6 +275,134 @@ require([
     
     openFiles.push(_file);
     tc.addChild(cp);
+  }
+  
+  /*********************************************************************
+   * Edit Menu
+   ********************************************************************/  
+  function editMenu() {
+   var menu = new DropDownMenu();
+    menu.addChild(editUndo());
+    menu.addChild(editRedo());
+    menu.addChild(new MenuSeparator()); 
+    menu.addChild(editCut());
+    menu.addChild(editCopy());
+    menu.addChild(editPaste());
+    menu.addChild(editDelete());
+    menu.addChild(new MenuSeparator());
+    menu.addChild(editCommands());
+    menu.addChild(editFormat());
+    menu.addChild(new MenuSeparator());
+    menu.addChild(editInsertComments());
+    menu.addChild(editInsertDate());
+    menu.addChild(editInsertInclude());
+    menu.addChild(editInsertAlternativeWhiteSpace());
+    menu.addChild(new MenuSeparator());
+    menu.addChild(editPreferences());
+    menu.addChild(editPluginPreferences());
+    
+    return menu;
+  }
+  
+  function editUndo() {
+    return new MenuItem({
+      label: 'Undo',
+      onClick: function() {
+        console.warn("Edit->Undo  - not yet implemented");
+      },
+      disabled: true
+    });
+  }
+  
+  function editRedo() {
+    return new MenuItem({
+      label: 'Redo',
+      disabled: true
+    });
+  }
+  
+  function editCut() {
+    return new MenuItem({
+      label: 'Cut',
+      disabled: true
+    });
+  }
+  
+  function editCopy() {
+    return new MenuItem({
+      label: 'Copy',
+      disabled: true
+    });
+  }
+  
+  function editPaste() {
+    return new MenuItem({
+      label: 'Paste',
+      disabled: true
+    });
+  }
+  
+  function editDelete() {
+    return new MenuItem({
+      label: 'Delete',
+      disabled: true
+    });
+  }
+  
+  function editCommands() {
+    return new MenuItem({
+      label: 'Commands',
+      disabled: true
+    });
+  }
+  
+  function editFormat() {
+    return new MenuItem({
+      label: 'Format',
+      disabled: true
+    });
+  }
+  
+  function editInsertComments() {
+    return new MenuItem({
+      label: 'Insert Comments',
+      disabled: true
+    });
+  }
+  
+  function editInsertDate() {
+    return new MenuItem({
+      label: 'Insert Date',
+      disabled: true
+    });
+  }
+  
+  function editInsertInclude() {
+    return new MenuItem({
+      label: 'Insert "include <...>"',
+      disabled: true
+    });
+  }
+  
+  function editInsertAlternativeWhiteSpace() {
+    return new MenuItem({
+      label: 'Insert Alternative White Space',
+      disabled: true
+    });
+  }
+  
+  function editPreferences() {
+    return new MenuItem({
+      label: 'Preferences',
+      disabled: true
+    });
+  }
+  
+  function editPluginPreferences() {
+    return new MenuItem({
+      label: 'Plugin Preferences',
+      disabled: true
+    });
   }
   
   /*********************************************************************
