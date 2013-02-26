@@ -128,7 +128,7 @@ define([
 		},
 		
 		closeFile: function(cp) {
-			return false;
+			return true;
 		},
 		
 		refreshFile: function(cp) {
