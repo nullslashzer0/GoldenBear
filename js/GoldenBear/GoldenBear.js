@@ -7,7 +7,7 @@ require([
   "dijit/MenuBar", "dijit/PopupMenuBarItem", "dijit/DropDownMenu",
   "dijit/MenuItem", "dijit/PopupMenuItem", "dijit/MenuSeparator",
 	"dijit/layout/BorderContainer", "dijit/layout/TabContainer", "dijit/layout/ContentPane",
-  "GoldenBear/File"
+  "GoldenBear/FileManager", "GoldenBear/File"
 ], function(
 	ready, parser, on,
   cookie,
@@ -17,7 +17,7 @@ require([
   MenuBar, PopupMenuBarItem,DropDownMenu,
   MenuItem, PopupMenuItem, MenuSeparator,
 	BorderContainer, TabContainer, ContentPane,
-  File
+  FileManager, File
 ){
   
   var codemirror = {
@@ -27,16 +27,13 @@ require([
     ]
   };
   
-  var openFiles = [];
+  var fileManager = new FileManager;
   
 	ready(function() {
     applicationMenu();
-    registry.byId('documentEditor').watch('selectedChildWidget', function(name, oval, nval) {
+    registry.byId('fileContainer').watch('selectedChildWidget', function(name, oval, nval) {
       console.debug(name, " changed from ", oval, " to ", nval);
-      var file = registry.byId(domAttr.get(nval.domNode, 'data-fileid'));
-      var cm = file.get('codemirror');
-      cm.refresh(); // refresh codemirror to fix display issues
-      cm.focus();
+      fileManager.refreshActiveFile(nval);
     });
     
     domStyle.set(dom.byId('app-splash'), 'display', 'none');
@@ -87,7 +84,6 @@ require([
       label: "Tools",
       popup: new DropDownMenu({})
     }));
-    
      
     menubar.addChild(new PopupMenuBarItem({
       label: "Help",
@@ -103,14 +99,15 @@ require([
    ********************************************************************/  
   function fileMenu() {
 	  function fileNew() {
-		return new MenuItem({
-		  label: 'New',
-		  onClick: function() {
-			openFile('text.xml');
-			openFile('test.html');
-			openFile();
-		  }
-		});
+			var tc = registry.byId('fileContainer');
+			return new MenuItem({
+				label: 'New',
+				onClick: function() {
+					tc.addChild(fileManager.newFile('text.xml'));
+					tc.addChild(fileManager.newFile('test.html'));
+					tc.addChild(fileManager.newFile());
+				}
+			});
 	  }
 	  
 	  function fileNewFileWithTemplate() {
@@ -249,35 +246,7 @@ require([
     
     return menu;
   }
-  
-  function openFile(filename) {
-    var filename = filename || 'untitled';
-    var cmid = "document." + openFiles.length;  // codemirror id
-    var tc = registry.byId('documentEditor');
-    var cp = new ContentPane({
-      id: 'tab.' + cmid,
-      title: filename,
-      closable: true
-    });
     
-    var cm = CodeMirror(cp.containerNode, {
-      theme: cookie('goldenbear.editor.theme') || 'default',
-      lineNumbers: true,
-    });
-
-    var _file = new File({
-      codemirror: cm,
-      name: filename
-    });
-    
-    console.debug(_file);
-    
-    domAttr.set(cp.domNode, 'data-fileid', _file.id);
-    
-    openFiles.push(_file);
-    tc.addChild(cp);
-  }
-  
   /*********************************************************************
    * Edit Menu
    ********************************************************************/  
