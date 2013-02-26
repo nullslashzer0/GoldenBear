@@ -33,7 +33,7 @@ require([
     applicationMenu();
     registry.byId('fileContainer').watch('selectedChildWidget', function(name, oval, nval) {
       console.debug(name, " changed from ", oval, " to ", nval);
-      fileManager.refreshActiveFile(nval);
+      fileManager.refreshFile(nval);
     });
     
     domStyle.set(dom.byId('app-splash'), 'display', 'none');
@@ -99,127 +99,137 @@ require([
    ********************************************************************/  
   function fileMenu() {
 	  function fileNew() {
-			var tc = registry.byId('fileContainer');
 			return new MenuItem({
 				label: 'New',
 				onClick: function() {
-					tc.addChild(fileManager.newFile('text.xml'));
-					tc.addChild(fileManager.newFile('test.html'));
-					tc.addChild(fileManager.newFile());
+					var tc = registry.byId('fileContainer');
+					var cp = fileManager.newFile();
+					tc.addChild(cp);
+					tc.selectChild(cp, true);
 				}
 			});
 	  }
 	  
 	  function fileNewFileWithTemplate() {
-		return new MenuItem({
-		  label: 'New (With Template)',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'New (With Template)',
+				disabled: true
+			});
 	  }
 	  
 	  function fileOpen() {
-		return new MenuItem({
-		  label: 'Open',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Open',
+				onClick: function() {
+					var tc = registry.byId('fileContainer');
+					tc.addChild(fileManager.openFile('Test.html'));
+					tc.addChild(fileManager.openFile('Test.perl'));
+				}
+			});
 	  }
 	  
 	  function fileOpenSelectedFile() {
-		return new MenuItem({
-		  label: 'Open Selected File',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Open Selected File',
+				disabled: true
+			});
 	  }
 	  
 	  function fileRecentFiles() {
-		return new MenuItem({
-		  label: 'Recent Files',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Recent Files',
+				disabled: true
+			});
 	  }
 	  
 	  function fileSave() {
-		return new MenuItem({
-		  label: 'Save',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Save',
+				disabled: true
+			});
 	  }
 	  
 	  function fileSaveAs() {
-		return new MenuItem({
-		  label: 'Save As',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Save As',
+				disabled: true
+			});
 	  }
 	  
 	  function fileSaveAll() {
-		return new MenuItem({
-		  label: 'Save All',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Save All',
+				disabled: true
+			});
 	  }
 	  
 	  function fileReload() {
-		return new MenuItem({
-		  label: 'Reload',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Reload',
+				disabled: true
+			});
 	  }
 	  
 	  function fileReloadAll() {
-		return new MenuItem({
-		  label: 'Reload All',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Reload All',
+				disabled: true
+			});
 	  }
 	  
 	  function fileProperties() {
-		return new MenuItem({
-		  label: 'Properties',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Properties',
+				disabled: true
+			});
 	  }
 	  
 	  function filePageSetup() {
-		return new MenuItem({
-		  label: 'Page Setup',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Page Setup',
+				disabled: true
+			});
 	  }
 	  
 	  function filePrint() {
-		return new MenuItem({
-		  label: 'Print',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Print',
+				disabled: true
+			});
 	  }
 	  
 	  function fileClose() {
-		return new MenuItem({
-		  label: 'Close',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Close',
+				onClick: function() {
+					var tc = registry.byId('fileContainer')
+					var cp = tc.get('selectedChildWidget');
+					if (fileManager.closeFile(cp)) {
+						tc.removeChild(cp);
+					}
+				}
+			});
 	  }
 	  
 	  function fileCloseOtherDocuments() {
-		return new MenuItem({
-		  label: 'Close Other Documents',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Close Other Documents',
+				disabled: true
+			});
 	  }
 	  
 	  function fileCloseAll() {
-		return new MenuItem({
-		  label: 'Close All',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Close All',
+				disabled: true
+			});
 	  }
 	  
 	  function fileQuit() {
-		return new MenuItem({
-		  label: 'Quit',
-		  disabled: true
-		});
+			return new MenuItem({
+				label: 'Quit',
+				disabled: true
+			});
 	  }
 	  
 	  
@@ -241,6 +251,10 @@ require([
     menu.addChild(new MenuSeparator());
     menu.addChild(filePageSetup());
     menu.addChild(filePrint());
+    menu.addChild(new MenuSeparator());
+    menu.addChild(fileClose());
+    menu.addChild(fileCloseOtherDocuments());
+    menu.addChild(fileCloseAll());
     menu.addChild(new MenuSeparator());
     menu.addChild(fileQuit());
     
