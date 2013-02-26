@@ -1,16 +1,16 @@
 define([
 	"dojo/cookie",
   "dojo/_base/lang", "dojo/_base/declare", "dijit/_WidgetBase",
-  "dojo/_base/array",
-  "dojo/dom-attr",
+  "dojo/_base/array", "dojo/on",
+  "dojo/dom", "dojo/dom-attr", "dojo/dom-style",
   "dijit/registry",
   "dijit/layout/ContentPane",
   "GoldenBear/File"
 ], function(
 	cookie,
   lang, declare, _WidgetBase,
-  array,
-  domAttr,
+  array, on,
+  dom, domAttr, domStyle,
   registry,
   ContentPane,
   File
@@ -74,8 +74,6 @@ define([
     
     postCreate: function() {
       this._set('_fileCollection', []);
-      console.debug("CODEMIRROR: ", CodeMirror);
-      console.debug("FILECOLLECTION", this._fileCollection);
       this.inherited('postCreate', arguments);
     },
     
@@ -107,6 +105,21 @@ define([
 					name: filename
 				});
 				
+				file.watch('modified', function(name, oval, nval) {
+					var tabLabel = dom.byId('fileContainer_tablist_' + cp.containerNode['id']);
+					if (nval) {
+						tabLabel.innerHTML += "*";
+						domStyle.set(tabLabel, 'color', 'red');
+					} else {
+						tabLabel = tabLabel.replace(/\*$/, '');
+						domStyle.set(tabLabel, 'color', 'black');
+					}
+				});
+				
+				cm.on('change', lang.hitch(this, function(cm, obj) {
+					file.set('modified', true);
+				}));
+				
 				this._fileCollection.push(file);
 				domAttr.set(cp.domNode, 'data-fileid', file.get('id'));
 			}
@@ -114,14 +127,23 @@ define([
 			return cp;
 		},
 		
-		refreshActiveFile: function(cp) {
-			var fileid = domAttr.get(cp.domNode, 'data-fileid');
-			var file = registry.byId(fileid);
-			var cm = file.get('codemirror');
+		closeFile: function(cp) {
+			return false;
+		},
+		
+		refreshFile: function(cp) {
+			var cm = getCodeMirror(cp);
+			console.debug(cm);
 			cm.refresh();
 			cm.focus();			
 		}
   }); // End declare
+  
+  function getCodeMirror(cp) {
+		var fileid = domAttr.get(cp.domNode, 'data-fileid');
+		var file = registry.byId(fileid);
+		return file.get('codemirror');
+	}
   
   return FileManager;
 }); // End define
