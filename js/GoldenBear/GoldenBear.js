@@ -26,16 +26,17 @@ require([
       'monokai','neat','night','rubyblue','solarized','twilight','vibrant-ink','xq-dark'
     ]
   };
-  
-  var fileManager = new FileManager;
-  
-	ready(function() {
+	
+	var fm = undefined;
+	
+  ready(function() {
     applicationMenu();
-    registry.byId('fileContainer').watch('selectedChildWidget', function(name, oval, nval) {
-      console.debug(name, " changed from ", oval, " to ", nval);
-      fileManager.refreshFile(nval);
-    });
     
+    fm = new FileManager({
+			tc: registry.byId('fileContainer')
+		});		
+    
+    // hide the splash image
     domStyle.set(dom.byId('app-splash'), 'display', 'none');
 	}); // End ready
   
@@ -104,9 +105,7 @@ require([
 			return new MenuItem({
 				label: 'New',
 				onClick: function() {
-					var cp = fileManager.newFile();
-					tc.addChild(cp);
-					tc.selectChild(cp, true);
+					fm.newFile();
 				}
 			});
 	  }
@@ -122,8 +121,8 @@ require([
 			return new MenuItem({
 				label: 'Open',
 				onClick: function() {
-					tc.addChild(fileManager.openFile('Test.html'));
-					tc.addChild(fileManager.openFile('Test.perl'));
+					fm.openFile('Test.tt');
+					fm.openFile('Test.perl');
 				}
 			});
 	  }
@@ -201,26 +200,21 @@ require([
 	  function fileClose() {
 			return new MenuItem({
 				label: 'Close',
-				onClick: function() {
-					var cp = tc.get('selectedChildWidget');
-					if (fileManager.closeFile(cp)) {
-						tc.removeChild(cp);
-					}
-				}
+				onClick: function() { fm.closeFile(); }
 			});
 	  }
 	  
 	  function fileCloseOtherDocuments() {
 			return new MenuItem({
 				label: 'Close Other Documents',
-				disabled: true
+				onClick: function() { fm.closeOtherFiles(); }
 			});
 	  }
 	  
 	  function fileCloseAll() {
 			return new MenuItem({
 				label: 'Close All',
-				disabled: true
+				onClick: function() { fm.closeAllFiles(); }
 			});
 	  }
 	  
@@ -557,13 +551,11 @@ require([
 			var themes = codemirror.themes.reverse();
 			var i = themes.length;
 			
-			while(--i) {
+			while(i) {
 				popup.addChild(new MenuItem({
-					label: codemirror.themes[i],
+					label: codemirror.themes[--i],
 					onClick: function() {
-						for(var i = 0, max = openFiles.length; i < max; i++) {
-							openFiles[i].get('codemirror').setOption('theme', this.label)
-						}
+						fm.setCodeMirrorTheme(this.label);
 						cookie('goldenbear.editor.theme', this.label);
 					}
 				}));

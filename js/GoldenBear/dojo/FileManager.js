@@ -4,7 +4,7 @@ define([
   "dojo/_base/array", "dojo/on",
   "dojo/dom", "dojo/dom-attr", "dojo/dom-style",
   "dijit/registry",
-  "dijit/layout/ContentPane",
+  "dijit/layout/TabContainer", "dijit/layout/ContentPane",
   "GoldenBear/File"
 ], function(
 	cookie,
@@ -12,7 +12,7 @@ define([
   array, on,
   dom, domAttr, domStyle,
   registry,
-  ContentPane,
+  TabContainer, ContentPane,
   File
 ){
   // TODO: temporary until either extension map is stored in database or file and delivered by service
@@ -24,7 +24,7 @@ define([
     'erlang':     '*.erl;',
     'haskell':    '*.hs;*.lhs;',
     'haxe':       '*.hx;',
-    'htmlmixed':  '*.htm;*.html;*.shtml;*.hta;*.htd;*.htt;*.cfm;',
+    'htmlmixed':  '*.htm;*.html;*.shtml;*.hta;*.htd;*.htt;*.cfm;*.tt;*.tt2',
     'javascript': '*.js;',
     'lua':        '*.lua;',
     'markdown':   '*.mdml;*.markdown;*.md;*.mkd;',
@@ -64,16 +64,30 @@ define([
     'yaml':       ['js/CodeMirror/mode/yaml/yaml.js']
   };
   
+  var codemirror = {
+    themes: [
+      'ambiance', 'blackboard','cobalt','eclipse','elegant','erlang-dark','lesser-dark',
+      'monokai','neat','night','rubyblue','solarized','twilight','vibrant-ink','xq-dark'
+    ]
+  };
+  
   var CodeMirror = window.CodeMirror || 'undefined';
   
   var FileManager = declare("GoldenBear/FileManager", [_WidgetBase], {
-    _fileCollection: undefined,
+    fileCollection: undefined,
+		tc: undefined,	// TabContainer should be passed in during application ready
+    
     constructor: function(props) {
       lang.mixin(props);
     },
     
     postCreate: function() {
-      this._set('_fileCollection', []);
+      this._set('fileCollection', []);
+      this.tc.watch('selectedChildWidget', lang.hitch(this, function(name, oval, nval) {
+				console.debug(name, " changed from ", oval, " to ", nval);
+				this.refreshFile(nval);
+			}));
+				
       this.inherited('postCreate', arguments);
     },
     
@@ -83,7 +97,7 @@ define([
     
     openFile: function(filename) {
 			filename = filename || 'untitled';
-			var cmid = "document." + this._fileCollection.length;
+			var cmid = "document." + this.fileCollection.length;
 			var cp = new ContentPane({
 				id: cmid,
 				title: filename,
@@ -96,7 +110,6 @@ define([
 				console.debug("CodeMirror undefined: add textarea to ContentPane");
 			} else {
 				cm = CodeMirror(cp.containerNode, {
-					//~ theme: cookie('goldenbear.editor.theme' || 'default'),
 					lineNumbers: true
 				});
 				
@@ -120,14 +133,18 @@ define([
 					file.set('modified', true);
 				}));
 				
-				this._fileCollection.push(file);
+				cp.on('close', lang.hitch(this, function (cp) { return this.closeFile(cp); }, cp));
+				
+				this.fileCollection.push(file);
 				domAttr.set(cp.domNode, 'data-fileid', file.get('id'));
+				this.tc.addChild(cp);
+				this.tc.selectChild(cp);
 			}
-			
-			return cp;
 		},
 		
 		closeFile: function(cp) {
+			var tc = this.tc;
+			cp = cp || tc.get('selectedChildWidget');
 			var fileid = domAttr.get(cp.domNode, 'data-fileid');
       var file = registry.byId(fileid);
       var close = false;
@@ -138,7 +155,34 @@ define([
         console.warn("File was modified, prompt for saving before close");
       }
       
-      return close;
+      if (close) {
+				this.tc.removeChild(cp);
+			}
+			return close;
+		},
+		
+		closeOtherFiles: function(cp) {
+			var tc = this.tc;
+			var files = tc.getChildren();
+			var selected = tc.get('selectedChildWidget');
+			var i = files.length;
+			
+			while(i) {
+				var cp = files[--i];
+				if ( cp !== selected ) {
+					this.closeFile(files[i]);
+				}
+			}
+		},
+		
+		closeAllFiles: function() {
+			var tc = this.tc;
+			var files = tc.getChildren();
+			var i = files.length;
+			
+			while(i) {
+				this.closeFile(files[--i]);
+			}
 		},
 		
 		refreshFile: function(cp) {
@@ -146,6 +190,14 @@ define([
 			console.debug(cm);
 			cm.refresh();
 			cm.focus();			
+		},
+		
+		setCodeMirrorTheme: function(theme) {
+			var i = this.fileCollection.length;
+
+			while(i) {
+				this.fileCollection[--i].get('codemirror').setOption('theme', theme);
+			}
 		}
   }); // End declare
   
