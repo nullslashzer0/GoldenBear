@@ -98,11 +98,12 @@ require([
    * File Menu
    ********************************************************************/  
   function fileMenu() {
+    var tc = registry.byId('fileContainer');
+    
 	  function fileNew() {
 			return new MenuItem({
 				label: 'New',
 				onClick: function() {
-					var tc = registry.byId('fileContainer');
 					var cp = fileManager.newFile();
 					tc.addChild(cp);
 					tc.selectChild(cp, true);
@@ -121,7 +122,6 @@ require([
 			return new MenuItem({
 				label: 'Open',
 				onClick: function() {
-					var tc = registry.byId('fileContainer');
 					tc.addChild(fileManager.openFile('Test.html'));
 					tc.addChild(fileManager.openFile('Test.perl'));
 				}
@@ -202,7 +202,6 @@ require([
 			return new MenuItem({
 				label: 'Close',
 				onClick: function() {
-					var tc = registry.byId('fileContainer')
 					var cp = tc.get('selectedChildWidget');
 					if (fileManager.closeFile(cp)) {
 						tc.removeChild(cp);

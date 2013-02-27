@@ -128,7 +128,17 @@ define([
 		},
 		
 		closeFile: function(cp) {
-			return true;
+			var fileid = domAttr.get(cp.domNode, 'data-fileid');
+      var file = registry.byId(fileid);
+      var close = false;
+      
+      if (file.get('modified') == false) {
+        close = true;
+      } else {
+        console.warn("File was modified, prompt for saving before close");
+      }
+      
+      return close;
 		},
 		
 		refreshFile: function(cp) {
