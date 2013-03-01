@@ -1,10 +1,10 @@
 define([
-  "dojo/_base/lang", "dojo/_base/declare", "dijit/_WidgetBase",
-  "dojo/dom-construct", "dojo/dom-attr",
+  "dojo/_base/lang", "dojo/_base/declare", "dijit/_WidgetBase", "dijit/layout/ContentPane",
+  "dojo/dom", "dojo/dom-construct", "dojo/dom-attr", "dojo/dom-style",
   "dojo/request/xhr"
 ], function(
-  lang, declare, _WidgetBase,
-  domConstruct, domAttr,
+  lang, declare, _WidgetBase, ContentPane,
+  dom, domConstruct, domAttr, domStyle,
   xhr
 ){
   // TODO: temporary until either extension map is stored in database or file and delivered by service
@@ -95,32 +95,67 @@ define([
     return loaded;
   }
   
-  var File = declare("GoldenBear/File", [_WidgetBase], {
-    codemirror: undefined,
-    name: 'untitled',
-    modified: false,
+  var File = declare("GoldenBear/File", [ContentPane], {
+    cm: undefined,
+    filename: 'untitled',
+    closable: true,
+    saved: true,
     
     constructor: function(props) {
       lang.mixin(props);
     },
     
     postCreate: function() {
-      this.setCodeMirrorMode();
+			// create the code editor
+      
+      this._set('title', this.filename);
+			if (typeof CodeMirror === 'undefined') {
+				console.warn("File: CodeMirror was not defined, add a text area instead");
+			} else {
+				this.cm = CodeMirror(this.containerNode);
+			}
+      
+      this.watch('saved', function (name, oval, nval) {
+				var tabLabel = dom.byId('fileContainer_tablist_' + this.containerNode['id']);
+				if (nval) {
+					tabLabel = tabLabel.replace(/\*$/, '');
+					domStyle.set(tabLabel, 'color', 'black');
+				} else {
+					tabLabel.innerHTML += "*";
+					domStyle.set(tabLabel, 'color', 'red');
+				}
+			});
+			
+      this.cm.on('change', lang.hitch(this, function(cm, obj) {
+        this._set('saved', false);
+      }));
+      
+      this.on('show', function() {
+        this.cm.refresh();
+				this.cm.focus();
+      });
+      
+      this.on('close', function() {
+        console.debug(this);
+        if (this.saved) {
+          return true;
+        } else {
+          return false;
+        }
+        
+      });
       this.inherited('postCreate', arguments);
     },
     
-    extension: function() {
-      var parts = this.name.split('.');
-      return parts.pop();
+    setTheme: function(theme) {
+      console.debug(this.cm);
+      this.cm.setOption('theme', theme);
     },
     
-    
-    
-    setCodeMirrorMode: function() {
+    setMode: function(filename) {
       var mode = getCodeMirrorMode(this.name);
       var loaded = modeScriptLoaded(mode);
-      var cm = this.codemirror;
-      
+      var cm = this.cm;
       // check if script was already loaded before loading again
       if (!loaded) {
         var files = codemirrorModeFile[mode];

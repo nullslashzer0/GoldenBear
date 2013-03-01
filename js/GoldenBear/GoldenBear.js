@@ -27,14 +27,11 @@ require([
     ]
   };
 	
-	var fm = undefined;
+	var tc = undefined;
 	
   ready(function() {
     applicationMenu();
-    
-    fm = new FileManager({
-			tc: registry.byId('fileContainer')
-		});		
+    tc = registry.byId('fileContainer');
     
     // hide the splash image
     domStyle.set(dom.byId('app-splash'), 'display', 'none');
@@ -99,13 +96,12 @@ require([
    * File Menu
    ********************************************************************/  
   function fileMenu() {
-    var tc = registry.byId('fileContainer');
     
 	  function fileNew() {
 			return new MenuItem({
 				label: 'New',
 				onClick: function() {
-					fm.newFile();
+					tc.addChild(new File());
 				}
 			});
 	  }
@@ -121,8 +117,8 @@ require([
 			return new MenuItem({
 				label: 'Open',
 				onClick: function() {
-					fm.openFile('Test.tt');
-					fm.openFile('Test.perl');
+					tc.addChild(new File({ filename: 'Test.tt' }));
+					tc.addChild(new File({ filename: 'Test.perl' }));
 				}
 			});
 	  }
@@ -200,21 +196,55 @@ require([
 	  function fileClose() {
 			return new MenuItem({
 				label: 'Close',
-				onClick: function() { fm.closeFile(); }
+				onClick: function() { 
+          var file = tc.get('selectedChildWidget');
+          if (file.get('saved')) {
+            tc.removeChild(file);
+          } else {
+            console.warn("file was not saved");
+          }
+        }
 			});
 	  }
 	  
 	  function fileCloseOtherDocuments() {
 			return new MenuItem({
 				label: 'Close Other Documents',
-				onClick: function() { fm.closeOtherFiles(); }
+				onClick: function() { 
+          var selected = tc.get('selectedChildWidget');
+          var files = tc.getChildren();
+          var i = files.length;
+          
+          while(i) {
+            var file = files[--i]
+            if (file !== selected) {
+              if (file.get('saved')) {
+                tc.removeChild(file);
+              } else {
+                console.warn("file was not saved");
+              }
+            }
+          }
+        }
 			});
 	  }
 	  
 	  function fileCloseAll() {
 			return new MenuItem({
 				label: 'Close All',
-				onClick: function() { fm.closeAllFiles(); }
+				onClick: function() { 
+          var files = tc.getChildren();
+          var i = files.length;
+          
+          while(i) {
+            var file = files[--i];
+            if (file.get('saved')) {
+              tc.removeChild(file);
+            } else {
+              console.warn('file was not saved');
+            }
+          }
+        }
 			});
 	  }
 	  
@@ -555,7 +585,14 @@ require([
 				popup.addChild(new MenuItem({
 					label: codemirror.themes[--i],
 					onClick: function() {
-						fm.setCodeMirrorTheme(this.label);
+            var theme = this.label;
+            var files = registry.byId('fileContainer').getChildren();
+            var i = files.length;
+            
+            while(i) {
+              files[--i].setTheme(theme);
+            }
+             
 						cookie('goldenbear.editor.theme', this.label);
 					}
 				}));
