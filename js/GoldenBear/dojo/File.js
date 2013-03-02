@@ -1,9 +1,9 @@
 define([
-  "dojo/_base/lang", "dojo/_base/declare", "dijit/_WidgetBase", "dijit/layout/ContentPane",
+  "dojo/_base/lang", "dojo/_base/declare", "dijit/layout/ContentPane",
   "dojo/dom", "dojo/dom-construct", "dojo/dom-attr", "dojo/dom-style",
   "dojo/request/xhr"
 ], function(
-  lang, declare, _WidgetBase, ContentPane,
+  lang, declare, ContentPane,
   dom, domConstruct, domAttr, domStyle,
   xhr
 ){
@@ -99,6 +99,7 @@ define([
     cm: undefined,
     filename: 'untitled',
     closable: true,
+    newFile: false,
     saved: true,
     
     constructor: function(props) {
@@ -106,8 +107,6 @@ define([
     },
     
     postCreate: function() {
-			// create the code editor
-      
       this._set('title', this.filename);
 			if (typeof CodeMirror === 'undefined') {
 				console.warn("File: CodeMirror was not defined, add a text area instead");
@@ -118,13 +117,18 @@ define([
       this.watch('saved', function (name, oval, nval) {
 				var tabLabel = dom.byId('fileContainer_tablist_' + this.containerNode['id']);
 				if (nval) {
-					tabLabel = tabLabel.replace(/\*$/, '');
+					tabLabel.innerHTML = tabLabel.innerHTML.replace(/\*$/, '');
 					domStyle.set(tabLabel, 'color', 'black');
 				} else {
 					tabLabel.innerHTML += "*";
 					domStyle.set(tabLabel, 'color', 'red');
 				}
 			});
+      
+      this.watch('filename', function(name, oval, nval) {
+        var tabLabel = dom.byId('fileContainer_tablist_' + this.containerNode['id']);
+        this.set('title', nval);
+      });
 			
       this.cm.on('change', lang.hitch(this, function(cm, obj) {
         this._set('saved', false);
@@ -145,6 +149,25 @@ define([
         
       });
       this.inherited('postCreate', arguments);
+    },
+    
+    save: function(props) {
+      this._set('filename', props['filename'] || this.filename);
+      this._set('newFile', false);
+      this._set('saved', true);
+      return this;
+    },
+    
+    undo: function() {
+      this.cm.doc.undo();
+    },
+    
+    redo: function() {
+      this.cm.doc.redo();
+    },
+    
+    setEditorOption: function (option, value) {
+      this.cm.setOption(option, value);
     },
     
     setTheme: function(theme) {

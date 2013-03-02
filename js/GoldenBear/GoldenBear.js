@@ -5,9 +5,9 @@ require([
   "dijit/registry",
   "dijit/TitlePane",
   "dijit/MenuBar", "dijit/PopupMenuBarItem", "dijit/DropDownMenu",
-  "dijit/MenuItem", "dijit/PopupMenuItem", "dijit/MenuSeparator",
+  "dijit/MenuItem", "dijit/PopupMenuItem", "dijit/CheckedMenuItem", "dijit/MenuSeparator",
 	"dijit/layout/BorderContainer", "dijit/layout/TabContainer", "dijit/layout/ContentPane",
-  "GoldenBear/FileManager", "GoldenBear/File"
+  "GoldenBear/File", "GoldenBear/Dialog/SaveFile"
 ], function(
 	ready, parser, on,
   cookie,
@@ -15,9 +15,9 @@ require([
   registry,
   TitlePane,
   MenuBar, PopupMenuBarItem,DropDownMenu,
-  MenuItem, PopupMenuItem, MenuSeparator,
+  MenuItem, PopupMenuItem, CheckedMenuItem, MenuSeparator,
 	BorderContainer, TabContainer, ContentPane,
-  FileManager, File
+  File, SaveFile
 ){
   
   var codemirror = {
@@ -28,11 +28,22 @@ require([
   };
 	
 	var tc = undefined;
-	
+	var saveFileDialog = undefined;
+  
   ready(function() {
     applicationMenu();
     tc = registry.byId('fileContainer');
-    
+    saveFileDialog = new SaveFile({ 
+      id: "saveFileDialog",
+      onSave: function() {
+        var dialog = registry.byId('saveFileDialog');
+        var file = tc.get('selectedChildWidget').save({
+          filename: dialog.get('filename')
+        });
+        console.error("Service needed to save file to server: ", file);
+        dialog.hide();
+      }
+    }).placeAt(document.getElementsByTagName('body')[0]);
     // hide the splash image
     domStyle.set(dom.byId('app-splash'), 'display', 'none');
 	}); // End ready
@@ -101,7 +112,7 @@ require([
 			return new MenuItem({
 				label: 'New',
 				onClick: function() {
-					tc.addChild(new File());
+					tc.addChild(new File({ newFile: true }));
 				}
 			});
 	  }
@@ -140,7 +151,9 @@ require([
 	  function fileSave() {
 			return new MenuItem({
 				label: 'Save',
-				disabled: true
+				onClick: function() {
+          registry.byId('saveFileDialog').show(tc.get('selectedChildWidget'));
+        }
 			});
 	  }
 	  
@@ -154,7 +167,16 @@ require([
 	  function fileSaveAll() {
 			return new MenuItem({
 				label: 'Save All',
-				disabled: true
+				onClick: function() {
+          var selected = tc.get('selectedChildWidget');
+          var files = tc.getChildren();
+          var i = files.length;
+          
+          while(i) {
+            var file = files[--i]
+            registry.byId('saveFileDialog').show(file);
+          }
+        }
 			});
 	  }
 	  
@@ -292,16 +314,17 @@ require([
 			return new MenuItem({
 				label: 'Undo',
 				onClick: function() {
-					console.warn("Edit->Undo  - not yet implemented");
-				},
-				disabled: true
+					tc.get('selectedChildWidget').undo()
+				}
 			});
 		}
 		
 		function editRedo() {
 			return new MenuItem({
 				label: 'Redo',
-				disabled: true
+				onClick: function() {
+					tc.get('selectedChildWidget').redo()
+				}
 			});
 		}
 		
@@ -612,9 +635,19 @@ require([
 		}
 		
 		function viewEditor_ShowLineNumbers() {
-			return new MenuItem({
+			return new CheckedMenuItem({
 				label: 'Show Line Numbers',
-				disabled: true
+				onClick: function() {
+          var theme = this.label;
+          var files = registry.byId('fileContainer').getChildren();
+          var i = files.length;
+          
+          while(i) {
+            files[--i].setEditorOption('lineNumbers', this.checked);
+          }
+           
+          cookie('goldenbear.editor.lineNumbers', this.checked);
+        }
 			});
 		}
 		
