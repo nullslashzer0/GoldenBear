@@ -146,7 +146,6 @@ define([
         } else {
           return false;
         }
-        
       });
       this.inherited('postCreate', arguments);
     },
@@ -155,6 +154,7 @@ define([
       this._set('filename', props['filename'] || this.filename);
       this._set('newFile', false);
       this._set('saved', true);
+      console.debug(this.cm.getValue());
       return this;
     },
     
@@ -164,6 +164,16 @@ define([
     
     redo: function() {
       this.cm.doc.redo();
+    },
+    
+    replaceSelection: function(string) {
+      this.cm.doc.replaceSelection(string);
+    },
+    
+    insertDate: function(dateString) {
+      this.replaceSelection(this.cm.doc.getSelection() + dateString);
+      this.cm.doc.setSelection(this.cm.doc.sel.to);
+      this.cm.focus();
     },
     
     setEditorOption: function (option, value) {
@@ -198,7 +208,9 @@ define([
           });
         }
       }
-    }
+    },
+    
+    
   }); // End declare
   
   return File;

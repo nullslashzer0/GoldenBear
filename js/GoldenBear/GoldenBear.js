@@ -1,6 +1,6 @@
 require([
 	"dojo/ready", "dojo/parser", "dojo/on",
-  "dojo/cookie",
+  "dojo/cookie", "dojo/date/locale",
 	"dojo/dom", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr",
   "dijit/registry",
   "dijit/TitlePane",
@@ -10,7 +10,7 @@ require([
   "GoldenBear/File", "GoldenBear/Dialog/SaveFile"
 ], function(
 	ready, parser, on,
-  cookie,
+  cookie, locale,
 	dom, domConstruct, domStyle, domAttr,
   registry,
   TitlePane,
@@ -168,7 +168,6 @@ require([
 			return new MenuItem({
 				label: 'Save All',
 				onClick: function() {
-          var selected = tc.get('selectedChildWidget');
           var files = tc.getChildren();
           var i = files.length;
           
@@ -352,7 +351,9 @@ require([
 		function editDelete() {
 			return new MenuItem({
 				label: 'Delete',
-				disabled: true
+				onClick: function() {
+          tc.get('selectedChildWidget').replaceSelection('');
+        }
 			});
 		}
 		
@@ -378,10 +379,43 @@ require([
 		}
 		
 		function editInsertDate() {
-			return new MenuItem({
+      function dateMenuItem(label, format) {
+        return new MenuItem({ 
+          label: label,
+          onClick: function() {
+            var dateString = locale.format(new Date(), { selector: 'date', datePattern: format });
+            tc.get('selectedChildWidget').insertDate(dateString);
+          }
+        })
+      }
+      
+      var popup = new DropDownMenu();
+			popup.addChild( dateMenuItem('dd.mm.yyyy', 'dd.MM.yyyy') );
+			popup.addChild( dateMenuItem('mm.dd.yyyy', 'MM.dd.yyyy') );
+			popup.addChild( dateMenuItem('yyyy/mm/dd', 'yyyy/MM/dd') );
+      popup.addChild(new MenuSeparator());
+      popup.addChild( dateMenuItem('dd.mm.yyyy hh:mm:ss', 'dd.MM.yyyy hh:mm:ss') );
+			popup.addChild( dateMenuItem('mm.dd.yyyy hh:mm:ss', 'MM.dd.yyyy hh:mm:ss') );
+			popup.addChild( dateMenuItem('yyyy/mm/dd hh:mm:ss', 'yyyy/MM/dd hh:mm:ss') );
+      popup.addChild(new MenuSeparator());
+      popup.addChild(new MenuItem({
+        label: "Use Custom Date Format",
+        disabled: true
+      }));
+      
+      popup.addChild(new MenuItem({
+        label: "Set Custom Date Format",
+        disabled: true
+      }));
+      
+      
+			var menu = new PopupMenuItem({
 				label: 'Insert Date',
-				disabled: true
+				popup: popup
 			});
+			
+			return menu;
+      
 		}
 		
 		function editInsertInclude() {
